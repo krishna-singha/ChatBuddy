@@ -48,7 +48,9 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({showInfo, setShowInfo}) => {
         <div>
           <h2 className="text-white text-base font-semibold">{selectedUser.name}</h2>
           {/* You can uncomment this later if needed */}
-          {/* <p className="text-sm text-gray-400">{selectedUser.email}</p> */}
+          <p className="text-sm text-gray-400">
+            {onlineUsers.includes(selectedUser._id) ? 'Online' : 'Offline'}
+          </p>
         </div>
       </div>
 

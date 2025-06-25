@@ -7,14 +7,15 @@ import ChatUserDetails from '../components/ChatUserDetails';
 import { ChatContext } from '../../context/ChatContext';
 import { AuthContext } from '../../context/AuthContext';
 
-interface Message {
+export interface Message {
   _id: string;
   senderId: string;
   receiverId: string;
-  text: string;
+  text?: string;
+  image?: string;
+  imagePublicId?: string;
   timestamp: Date;
   seen: boolean;
-  // type: 'text' | 'image' | 'file';
 }
 
 function Chat() {
@@ -59,7 +60,7 @@ function Chat() {
 
               return (
                 <div key={message._id} className={`flex items-end space-x-2 mb-5 ${isOwn ? "justify-end" : "justify-start"} `}>
-                  <MessageBubble isOwn={isOwn} message={message.text} timestamp={message.timestamp} />
+                  <MessageBubble isOwn={isOwn} messages={message} />
                 </div>
               )
             })}

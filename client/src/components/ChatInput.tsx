@@ -1,25 +1,60 @@
 import React, { useState, useRef, useContext } from 'react';
-import { Send, Paperclip, Smile, Mic, Image } from 'lucide-react';
+import { Send, Paperclip, Smile, Mic, Image, X } from 'lucide-react';
 import { ChatContext } from '../../context/ChatContext';
 
 
 const ChatInput = () => {
-  const { selectedUser, sendMessage } = useContext(ChatContext);
+  const { selectedUser, sendMessage, messageSent } = useContext(ChatContext);
 
   const [message, setMessage] = useState('');
   const [isRecording, setIsRecording] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [imageUploaded, setImageUploaded] = useState<File | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (message.trim()) {
-      sendMessage(message.trim());
+
+    const trimmedMessage = message.trim();
+
+    // If there's an image uploaded
+    if (imageUploaded) {
+      const reader = new FileReader();
+
+      reader.onload = async () => {
+        try {
+          const imageUrl = reader.result as string;
+
+          // Send message with or without text (both or only image)
+          sendMessage(trimmedMessage, imageUrl);
+
+          // Clear inputs
+          setMessage('');
+          setImageUploaded(null);
+          if (textareaRef.current) {
+            textareaRef.current.style.height = 'auto';
+          }
+        } catch (error) {
+          console.error('Error sending image message:', error);
+        }
+      };
+
+      reader.onerror = (error) => {
+        console.error('Error reading image file:', error);
+      };
+
+      reader.readAsDataURL(imageUploaded);
+    }
+    // Only text case
+    else if (trimmedMessage !== '') {
+      sendMessage(trimmedMessage, '');
       setMessage('');
       if (textareaRef.current) {
         textareaRef.current.style.height = 'auto';
       }
     }
   };
+
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -35,11 +70,6 @@ const ChatInput = () => {
     }
   };
 
-  const toggleRecording = () => {
-    setIsRecording(!isRecording);
-    // Implement voice recording logic here
-  };
-
   if (!selectedUser) {
     return null;
   }
@@ -47,21 +77,39 @@ const ChatInput = () => {
   return (
     <div className="p-4 bg-gray-900/95 backdrop-blur-xl border-t border-cyan-500/20 shadow-inner">
       <form onSubmit={handleSubmit} className="flex items-center space-x-3">
-        {/* <button
-          type="button"
-          className="p-2 rounded-full bg-gray-800/50 hover:bg-cyan-500/20 text-gray-400 hover:text-cyan-300 transition-all duration-200 hover:shadow-md hover:shadow-cyan-500/30"
-        >
-          <Paperclip size={20} />
-        </button> */}
 
         <button
+          onClick={() => fileRef.current?.click()}
           type="button"
-          className="p-2 rounded-full bg-gray-800/50 hover:bg-cyan-500/20 text-gray-400 hover:text-cyan-300 transition-all duration-200 hover:shadow-md hover:shadow-cyan-500/30"
+          className="p-2 rounded-full bg-gray-800/50 hover:bg-cyan-500/20 text-gray-400 hover:text-cyan-300 transition-all duration-200 hover:shadow-md hover:shadow-cyan-500/30 cursor-pointer"
         >
           <Image size={20} />
+          <input
+            onChange={(e) => {
+              if (e.target.files && e.target.files[0]) {
+                setImageUploaded(e.target.files[0]);
+              }
+            }}
+            ref={fileRef}
+            type="file"
+            accept='.jpg, .jpeg, .png'
+            id='image'
+            className='hidden'
+          />
         </button>
 
-        <div className="flex items-center relative w-full">
+        <div className="flex flex-col justify-center relative w-full bg-gray-800/50 border border-cyan-500/50 rounded-2xl p-2">
+          {imageUploaded && (
+            <div className="flex items-center justify-between bg-gray-800/50 rounded-lg w-fit relative mb-2">
+              <img src={URL.createObjectURL(imageUploaded)} alt="chat-image" className='w-[5rem] rounded-2xl' />
+              <button
+                onClick={() => setImageUploaded(null)}
+                className="text-cyan-400 hover:text-white transition-colors duration-200 absolute top-[0.2rem] right-[0.2rem] rounded-full bg-gray-700/50 cursor-pointer"
+              >
+                <X size={20} />
+              </button>
+            </div>
+          )}
           <textarea
             ref={textareaRef}
             value={message}
@@ -71,47 +119,24 @@ const ChatInput = () => {
             }}
             onKeyDown={handleKeyPress}
             placeholder="Type a message..."
-            className="w-full px-4 py-2 bg-gray-800/50 border border-gray-700/50 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 transition-all duration-200 resize-none scrollbar-thin scrollbar-thumb-cyan-500/30 scrollbar-track-transparent"
+            className="w-full px-4 py-2 rounded-2xl text-white placeholder-gray-400 focus:outline-none resize-none scrollbar-thin scrollbar-thumb-cyan-500/30 scrollbar-track-transparent"
             rows={1}
+            maxLength={500}
             style={{ minHeight: '40px', maxHeight: '120px' }}
           />
-
-          {/* <button
-            type="button"
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1 rounded-full hover:bg-gray-700/50 text-gray-400 hover:text-yellow-400 transition-all duration-200"
-          >
-            <Smile size={18} />
-          </button> */}
         </div>
 
         <button
           type="submit"
-          className="p-2 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-white transition-all duration-200 hover:shadow-md hover:shadow-cyan-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={messageSent}
+          className="p-2 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-white transition-all duration-200 hover:shadow-md hover:shadow-cyan-500/30 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
         >
-          <Send size={20} />
-        </button>
-
-        {/* {message.trim() ? (
-          <button
-            type="submit"
-            disabled={disabled}
-            className="p-2 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-white transition-all duration-200 hover:shadow-md hover:shadow-cyan-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
+          {messageSent ? (
+            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+          ) : (
             <Send size={20} />
-          </button>
-        ) : (
-          <button
-            type="button"
-            onClick={toggleRecording}
-            className={`p-2 rounded-full transition-all duration-200 ${
-              isRecording
-                ? 'bg-red-500 hover:bg-red-400 text-white animate-pulse shadow-lg shadow-red-500/30'
-                : 'bg-gray-800/50 hover:bg-cyan-500/20 text-gray-400 hover:text-cyan-300 hover:shadow-md hover:shadow-cyan-500/20'
-            }`}
-          >
-            <Mic size={20} />
-          </button>
-        )} */}
+          )}
+        </button>
       </form>
 
       {isRecording && (

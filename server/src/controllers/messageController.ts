@@ -116,10 +116,15 @@ export const sendMessage = async (
     const receiverId = req.params.id;
     const senderId = req.user._id.toString();
 
-    let imageUrl;
+    let imageUrl: string | null = null;
+    let imagePublicId: string | null = null;
+
     if (image) {
-      const uploadImage = await cloudinary.uploader.upload(image);
-      imageUrl = uploadImage.secure_url;
+      const uploadResult = await cloudinary.uploader.upload(image, {
+        folder: "ChatBuddy/chats",
+      });
+      imageUrl = uploadResult.secure_url;
+      imagePublicId = uploadResult.public_id;
     }
 
     const isReceiverChatOpen =
@@ -130,6 +135,7 @@ export const sendMessage = async (
       receiverId,
       text,
       image: imageUrl,
+      imagePublicId: imagePublicId,
       seen: isReceiverChatOpen,
     });
 
@@ -145,7 +151,7 @@ export const sendMessage = async (
       newMessage,
     });
   } catch (error) {
-    console.log("Error in sending message", error);
+    console.error("Error in sending message", error);
     return res.status(500).json({
       success: false,
       message: "Internal server error!",
@@ -177,7 +183,11 @@ export const getLatestMessages = async (
         message.senderId.toString() === userId
           ? message.receiverId
           : message.senderId;
-      latestMessages[otherUserId.toString()] = message.text ?? "";
+      latestMessages[otherUserId.toString()] = message.text
+        ? message.text
+        : message.image
+        ? "Sent a photo"
+        : "";
     });
 
     return res.status(200).json({

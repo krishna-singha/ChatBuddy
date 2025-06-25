@@ -4,11 +4,11 @@ import { Search, Plus, Settings } from 'lucide-react';
 import { AuthContext } from '../../context/AuthContext';
 import { ChatContext } from '../../context/ChatContext';
 import DEFAULT_AVATAR from '../assets/defaultAvatar';
-import { useNavigate } from "react-router-dom"
+import { useNavigate } from 'react-router-dom';
 
 const ChatSidebar = () => {
   const navigate = useNavigate();
-  const { getUsers, users, setSelectedUser, unseenMessages, latestMessages } = useContext(ChatContext);
+  const { getUsers, users, selectedUser, setSelectedUser, unseenMessages, latestMessages } = useContext(ChatContext);
   const { onlineUsers, authUser } = useContext(AuthContext);
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -16,8 +16,8 @@ const ChatSidebar = () => {
   const filteredUsers = searchQuery === ''
     ? users
     : users.filter(user =>
-      user.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+        user.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
 
   useEffect(() => {
     getUsers();
@@ -36,13 +36,12 @@ const ChatSidebar = () => {
     }
   };
 
-
   return (
     <motion.aside
       initial={{ x: -100, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ duration: 0.4, ease: 'easeOut' }}
-      className="w-80 h-screen bg-gradient-to-b from-gray-950/90 to-gray-900/90 backdrop-blur-2xl border-r border-cyan-600/30 flex flex-col shadow-2xl shadow-cyan-500/10"
+      className="w-80 h-screen bg-gradient-to-b from-gray-950/90 to-gray-900/90 backdrop-blur-2xl border-r border-cyan-600/30 flex flex-col shadow-[0_0_30px_0_rgba(0,255,255,0.05)]"
     >
       {/* Header */}
       <div className="px-5 py-6 border-b border-cyan-500/20">
@@ -52,14 +51,14 @@ const ChatSidebar = () => {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
             <input
               type="text"
-              placeholder="Search..."
+              placeholder="Search users..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-3 py-2 bg-gray-800/60 text-sm rounded-xl text-white placeholder-gray-400 border border-gray-700/40 focus:border-cyan-500 focus:ring focus:ring-cyan-400 transition-all duration-200"
+              className="w-full pl-10 pr-3 py-2 bg-gray-800/60 text-sm rounded-xl text-white placeholder-gray-400 border border-gray-700/40 focus:border-cyan-500 focus:ring focus:ring-cyan-400/40 transition-all duration-200"
             />
           </div>
           <button
-            className="p-2 rounded-xl bg-gradient-to-br from-cyan-600/20 to-cyan-800/30 hover:scale-105 text-cyan-300 hover:text-white transition-all hover:shadow-md hover:shadow-cyan-500/30 cursor-pointer"
+            className="p-2 rounded-xl bg-gradient-to-br from-cyan-600/20 to-cyan-800/30 hover:scale-105 text-cyan-300 hover:text-white transition-all hover:shadow-md hover:shadow-cyan-500/30"
             title="New Chat"
           >
             <Plus size={18} />
@@ -75,7 +74,7 @@ const ChatSidebar = () => {
             onClick={() => setSelectedUser(user)}
             whileHover={{ scale: 1.02 }}
             transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-            className={`group p-3 mb-3 mx-3 rounded-xl cursor-pointer bg-gray-800/60 backdrop-blur-md shadow-sm hover:shadow-md hover:shadow-cyan-500/10 transition-all duration-200`}
+            className={`group p-3 mb-3 mx-3 rounded-xl cursor-pointer bg-gray-800/60 backdrop-blur-md shadow-sm hover:shadow-md hover:shadow-cyan-500/10 transition-all duration-200 ${selectedUser?._id === user._id ? 'border-2 border-cyan-500/30' : 'border border-transparent hover:border-cyan-600/30'}`}
           >
             <div className="flex items-center gap-3">
               <div className="relative shrink-0">
@@ -87,21 +86,19 @@ const ChatSidebar = () => {
                 <div
                   className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-gray-950 ${getStatusColor(
                     onlineUsers.includes(user._id) ? 'online' : 'offline'
-                  )} shadow-sm`}
+                  )} animate-pulse`}
                 />
               </div>
               <div className="flex-1 min-w-0">
-                <div className="flex items-center">
-                  <h3 className="text-white font-medium truncate">{user.name}</h3>
+                <div className="flex items-center justify-between">
+                  <h3 className="text-cyan-300 font-medium truncate">{user.name}</h3>
                 </div>
-                <div>
-                  <p className="text-sm text-gray-300 truncate">
-                    {latestMessages[user._id] ? latestMessages[user._id] : "Start a conversation!"}
-                  </p>
-                </div>
+                <p className="text-sm text-gray-300 truncate">
+                  {latestMessages[user._id] || "Start a conversation!"}
+                </p>
               </div>
               {unseenMessages[user._id] > 0 && (
-                <div className="ml-2 bg-cyan-500 text-white text-xs px-2 py-0.5 rounded-full">
+                <div className="ml-2 bg-cyan-500 text-white text-xs px-2 py-0.5 rounded-full shadow-sm">
                   {unseenMessages[user._id]}
                 </div>
               )}
@@ -111,32 +108,32 @@ const ChatSidebar = () => {
       </div>
 
       {/* Footer - Current User */}
-      <div className="p-4 border-t border-cyan-500/20 flex items-center justify-between">
+      <div className="p-[1.57rem] border-t border-cyan-500/20 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="relative group">
             <img
               src={authUser?.avatar || DEFAULT_AVATAR}
               alt={authUser?.name || 'User'}
-              className="w-10 h-10 rounded-xl border-2 border-cyan-400 shadow-lg shadow-cyan-400/30 group-hover:scale-105 transition-transform"
+              className="w-10 h-10 rounded-xl border-2 border-cyan-400 shadow-md group-hover:scale-105 transition-transform"
             />
             {authUser?._id && onlineUsers.includes(authUser._id) && (
               <div
                 className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-gray-950 ${getStatusColor(
-                  onlineUsers.includes(authUser._id) ? 'online' : 'offline'
-                )}`}
+                  'online'
+                )} animate-pulse`}
               />
             )}
           </div>
           <div>
-            <h2 className="text-white text-sm font-semibold leading-tight">{authUser?.name}</h2>
-            <p className="text-cyan-400 text-xs capitalize">
+            <h2 className="text-white text-sm font-semibold leading-tight truncate">{authUser?.name}</h2>
+            <p className="text-cyan-400 text-xs capitalize truncate">
               {authUser?._id && onlineUsers.includes(authUser._id) ? 'Online' : 'Offline'}
             </p>
           </div>
         </div>
         <button
           onClick={() => navigate("/profile")}
-          className="p-2 rounded-xl bg-gradient-to-tr from-gray-800 to-gray-700 hover:scale-105 text-cyan-400 hover:text-white transition-all hover:shadow-md hover:shadow-cyan-500/30 cursor-pointer"
+          className="p-2 rounded-xl bg-gradient-to-tr from-gray-800 to-gray-700 hover:scale-105 text-cyan-400 hover:text-white transition-all hover:shadow-md hover:shadow-cyan-500/30"
           title="Settings"
         >
           <Settings size={18} />

@@ -21,10 +21,11 @@ interface Message {
     _id: string;
     senderId: string;
     receiverId: string;
-    text: string;
+    text?: string;
     timestamp: Date;
     seen: boolean;
     image?: string;
+    imagePublicId?: string;
 }
 
 interface ChatContextType {
@@ -35,10 +36,11 @@ interface ChatContextType {
     setUnseenMessages: React.Dispatch<React.SetStateAction<Record<string, number>>>;
     getUsers: () => Promise<void>;
     getMessages: (userId: string) => Promise<Message[]>;
-    sendMessage: (message: string) => Promise<void>;
+    sendMessage: (text: string, image: string) => Promise<void>;
     setSelectedUser: (user: User | null) => void;
     latestMessages: { [userId: string]: string };
     getLatestMessages: () => Promise<void>;
+    messageSent: boolean;
 }
 
 export const ChatContext = createContext<ChatContextType>({} as ChatContextType);
@@ -49,6 +51,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [unseenMessages, setUnseenMessages] = useState<Record<string, number>>({});
     const [latestMessages, setLatestMessages] = useState<{ [userId: string]: string }>({});
+    const [messageSent, setMessageSent] = useState(false);
 
     const { socket, axios, authUser } = useContext(AuthContext);
 
@@ -94,7 +97,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
-    const sendMessage = async (text: string): Promise<void> => {
+    const sendMessage = async (text: string, image: string): Promise<void> => {
         if (!selectedUser) {
             toast.error("No user selected.");
             return;
@@ -104,12 +107,15 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
             toast.error("User not authenticated.");
             return;
         }
+        setMessageSent(true);
 
         const tempMessage: Message = {
             _id: Date.now().toString(),
             senderId: authUser._id,
             receiverId: selectedUser._id,
             text,
+            image,
+            imagePublicId: '',
             timestamp: new Date(),
             seen: true,
         };
@@ -117,7 +123,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
         setMessages(prev => [...prev, tempMessage]);
 
         try {
-            const { data } = await axios.post(`/api/messages/send/${selectedUser._id}`, { text });
+            const { data } = await axios.post(`/api/messages/send/${selectedUser._id}`, { text, image });
             if (data.success) {
                 setMessages(prev =>
                     prev.map(msg => msg._id === tempMessage._id ? data.newMessage : msg)
@@ -128,6 +134,9 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
             }
         } catch {
             toast.error("Failed to send message.");
+        }
+        finally {
+            setMessageSent(false);
         }
     };
 
@@ -194,6 +203,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
         setSelectedUser: setSelectedUserWithMessages,
         latestMessages,
         getLatestMessages,
+        messageSent
     };
 
     return (
