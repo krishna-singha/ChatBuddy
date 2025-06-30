@@ -41,6 +41,7 @@ interface ChatContextType {
     latestMessages: { [userId: string]: string };
     getLatestMessages: () => Promise<void>;
     messageSent: boolean;
+    addOtherUsers: (userId: string) => Promise<void>;
 }
 
 export const ChatContext = createContext<ChatContextType>({} as ChatContextType);
@@ -57,9 +58,9 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
 
     const getUsers = async () => {
         try {
-            const { data } = await axios.get('/api/messages/user');
+            const { data } = await axios.get('/api/other-users/users');
             if (data.success) {
-                setUsers(data.users);
+                setUsers(data.otherUsers);
                 const unseen = { ...data.unseenMessages };
                 if (selectedUser) unseen[selectedUser._id] = 0;
                 setUnseenMessages(unseen);
@@ -68,6 +69,30 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
             toast.error("Failed to fetch users.");
         }
     };
+
+    const addOtherUsers = async (email: string) => {
+        try {
+            const { data } = await axios.post(`/api/other-users/add/${email}`);
+            console.log(data);
+
+            if (data.success && data.newOtherUsers) {
+                setUsers(prev => {
+                    const exists = prev.some(u => u._id === data.newOtherUsers._id);
+                    return exists ? prev : [...prev, data.newOtherUsers];
+                });
+
+                setUnseenMessages(prev => ({ ...prev, [data.newOtherUsers._id]: 0 }));
+                toast.success("User added to chat.");
+            } else {
+                toast.error(data.message || "Failed to add user.");
+            }
+        } catch (error: any) {
+            console.error("Error adding other user:", error.response?.data || error);
+            toast.error("Failed to add user.");
+        }
+    };
+
+
 
     const getMessages = async (userId: string): Promise<Message[]> => {
         try {
@@ -203,7 +228,8 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
         setSelectedUser: setSelectedUserWithMessages,
         latestMessages,
         getLatestMessages,
-        messageSent
+        messageSent,
+        addOtherUsers
     };
 
     return (

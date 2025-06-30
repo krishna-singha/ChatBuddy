@@ -1,4 +1,3 @@
-// src/index.ts
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
@@ -6,6 +5,7 @@ import http from "http";
 import { connectDatabase } from "./database/db";
 import userRouter from "./routes/userRoutes";
 import messageRouter from "./routes/messageRoute";
+import otherUserRouter from "./routes/otherUserRoute";
 import { setupSocketServer } from "./socketServer";
 
 const PORT = process.env.PORT || 8000;
@@ -18,10 +18,12 @@ const app = express();
 const server = http.createServer(app);
 
 // Middleware
-app.use(cors({
-  origin: process.env.FRONTEND_URL,
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+  })
+);
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
@@ -33,6 +35,7 @@ app.get("/api", (_req, res) => {
 // Routes
 app.use("/api/auth", userRouter);
 app.use("/api/messages", messageRouter);
+app.use("/api/other-users", otherUserRouter);
 
 // Setup Socket.IO
 setupSocketServer(server);
