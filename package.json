@@ -1,0 +1,49 @@
+{
+  "name": "chatbuddy",
+  "version": "1.0.0",
+  "description": "Modern real-time chat application with React and Node.js",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "dev": "make dev",
+    "install:all": "make install",
+    "build": "make build",
+    "start:frontend": "make dev-fe",
+    "start:backend": "make dev-be",
+    "build:frontend": "make build-fe",
+    "build:backend": "make build-be",
+    "lint": "make lint",
+    "test": "make test",
+    "clean": "make clean",
+    "quickstart": "make quickstart"
+  },
+  "keywords": [
+    "chat",
+    "real-time",
+    "socket.io",
+    "react",
+    "nodejs",
+    "typescript",
+    "mongodb"
+  ],
+  "author": "ChatBuddy Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/chatbuddy.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/chatbuddy/issues"
+  },
+  "homepage": "https://github.com/yourusername/chatbuddy#readme",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
