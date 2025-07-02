@@ -16,43 +16,6 @@ A feature-rich, real-time chat application built with React, Node.js, TypeScript
 - 🎨 **Modern UI** - Beautiful, responsive design with blur effects
 - 📱 **Mobile Responsive** - Works seamlessly on all devices
 
-## 🏗️ Project Structure
-
-```
-ChatBuddy/
-├── 📱 frontend/              # React + TypeScript client
-│   ├── src/
-│   │   ├── 🧩 components/    # Organized component library
-│   │   │   ├── chat/         # Chat-specific components
-│   │   │   ├── modals/       # Modal components
-│   │   │   ├── ui/           # Reusable UI components
-│   │   │   ├── layout/       # Layout components
-│   │   │   └── common/       # Common components
-│   │   ├── 📄 pages/         # Route pages
-│   │   ├── 🌐 context/       # React context providers
-│   │   ├── 🔧 services/      # API & Socket services
-│   │   ├── 🔤 types/         # TypeScript type definitions
-│   │   ├── 💾 utils/         # Utility functions
-│   │   └── ⚙️ config/        # Configuration files
-│   └── 📋 package.json
-├── 🖥️ backend/               # Node.js + Express server
-│   ├── src/
-│   │   ├── 🎯 controllers/   # Route controllers
-│   │   ├── 🗄️ models/        # Database models
-│   │   ├── 🛣️ routes/        # API routes
-│   │   ├── 🔐 middleware/    # Express middleware
-│   │   ├── 🌐 socket/        # Socket.IO handlers
-│   │   ├── 🗄️ database/      # Database configuration
-│   │   ├── 🔧 services/      # Business logic
-│   │   ├── 💾 utils/         # Utility functions
-│   │   └── ⚙️ config/        # Server configuration
-│   └── 📋 package.json
-├── 🤝 shared/                # Shared types & utilities
-├── 📋 scripts/               # Development & deployment scripts
-├── 🐳 docker/                # Docker configuration (future)
-└── 📚 docs/                  # Documentation
-```
-
 ## 🚀 Quick Start
 
 ### Prerequisites
@@ -246,7 +209,7 @@ Ensure all production environment variables are set for:
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the [MIT License](LICENSE) - see the LICENSE file for details.
 
 ## 🙏 Acknowledgments
 
