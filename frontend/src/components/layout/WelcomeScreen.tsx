@@ -21,7 +21,7 @@ const WelcomeScreen = () => {
     {
       icon: <Image className="w-6 h-6" />,
       title: "Rich Media",
-      description: "Share images and attachments seamlessly"
+      description: "Share images seamlessly"
     }
   ];
 
