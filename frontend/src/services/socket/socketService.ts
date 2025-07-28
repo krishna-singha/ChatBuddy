@@ -1,6 +1,6 @@
 import { io, Socket } from 'socket.io-client';
 import { API_CONFIG, SOCKET_EVENTS } from '../../config/constants';
-import type { IMessage } from '../../../../shared/types';
+import type { IMessage } from '../../types';
 
 class SocketService {
   private socket: Socket | null = null;
