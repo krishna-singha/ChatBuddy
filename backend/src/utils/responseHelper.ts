@@ -1,7 +1,7 @@
 import { Response } from "express";
 
 export const errorResponse = (res: Response, code: number, message: string) => {
-  console.log(message);
+  // console.log(message);
   
   return res.status(code).json({ success: false, message });
 };

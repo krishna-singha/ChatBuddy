@@ -80,7 +80,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     const getConversation = async () => {
         try {
             const { data } = await axios.get('/api/conversations');
-            console.log(data.conversations);
+            // console.log(data.conversations);
             if (data.success) {
                 setConversations(data.conversations);
             }
@@ -222,7 +222,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     const getMessages = async (conversationId: string): Promise<IMessage[]> => {
         try {
             const { data } = await axios.get(`/api/messages/${conversationId}`);
-            console.log(data.messages);
+            // console.log(data.messages);
 
             if (data.success) {
                 setMessages(data.messages);

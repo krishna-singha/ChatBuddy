@@ -281,7 +281,7 @@ const GroupInfoModal = ({ isOpen, onClose }: GroupInfoModalProps) => {
                     userIds: selectedUsers
                   });
 
-                  console.log('Members added successfully');
+                  // console.log('Members added successfully');
                   setShowAddMembers(false);
                   setSelectedUsers([]);
                   setSearchQuery('');

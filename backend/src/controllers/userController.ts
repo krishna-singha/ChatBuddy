@@ -52,9 +52,9 @@ export const login = async (req: Request, res: Response): Promise<any> => {
 
   try {
     const user = await User.findOne({ email });
-    
-    
-    if (!user) {console.log(user); return errorResponse(res, 400, "User does not exist!");}
+
+
+    if (!user) { return errorResponse(res, 400, "User does not exist!"); }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return errorResponse(res, 400, "Invalid password!");

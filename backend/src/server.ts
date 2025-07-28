@@ -39,7 +39,7 @@ setupSocketServer(server);
 
 connectDatabase().then(() => {
   server.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server is running`);
   })}).catch((error) => {
   console.error("Failed to connect to the database:", error);
   process.exit(1);

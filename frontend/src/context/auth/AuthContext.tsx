@@ -69,7 +69,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setOnlineUsers([]);
     socket?.disconnect();
     setSocket(null);
-    socketInitialized.current = false; // 👈 Reset on logout
+    socketInitialized.current = false;
     toast.success("Logged out successfully.");
   };
 
@@ -91,7 +91,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const connectSocket = (user: IUser) => {
     if (!user || socketInitialized.current) return;
 
-    socketInitialized.current = true; // ✅ Prevent duplicate
+    socketInitialized.current = true;
     const newSocket = io(BACKEND_URL, {
       query: { userId: user._id },
       transports: ['websocket'],
@@ -99,11 +99,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     });
 
     newSocket.on("connect", () => {
-      console.log("✅ Socket connected");
+      console.log("Socket connected");
     });
 
     newSocket.on("disconnect", () => {
-      console.log("🔌 Socket disconnected");
+      console.log("Socket disconnected");
     });
 
     newSocket.on("getOnlineUsers", (userIds: string[]) => {

@@ -27,7 +27,7 @@ export const setupSocketServer = (server: HttpServer) => {
       }
       userSocketMap[userId].add(socket.id);
       userChatState[userId] = null;
-      console.log(`✅ User connected: ${userId}`);
+      // console.log(`User connected: ${userId}`);
       
       // Join user to their conversation rooms
       Conversation.find({ "participants": userId })
@@ -108,7 +108,7 @@ export const setupSocketServer = (server: HttpServer) => {
 
 
     socket.on("disconnect", () => {
-      console.log(`🔌 User disconnected: ${userId}`);
+      // console.log(`User disconnected: ${userId}`);
       if (userId && userSocketMap[userId]) {
         userSocketMap[userId].delete(socket.id);
         if (userSocketMap[userId].size === 0) {
